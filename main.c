@@ -1,19 +1,18 @@
 // main.c
-#include "ls.h" // Sử dụng file header chung
+#include "ls.h" 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
 int main(int argc, char *argv[]) {
-    // 1. Khai báo các biến cờ (flags)
-    int long_format = 0;   // Cờ cho -l
-    int show_hidden = 0;   // Cờ cho -a
-    int sort_by_time = 0;  // Cờ cho -t
-    int reverse_order = 0; // Cờ cho -r (sắp xếp ngược)
+    // 1. Khai báo và Xử lý các biến cờ (flags)
+    int long_format = 0;   // -l
+    int show_hidden = 0;   // -a
+    int sort_by_time = 0;  // -t
     
-    const char *target_path = "."; // Mặc định là thư mục hiện tại (.)
+    const char *target_path = "."; 
 
-    // 2. Lặp qua các đối số để tìm cờ và đường dẫn
+    // Lặp qua các đối số để tìm cờ và đường dẫn
     for (int i = 1; i < argc; i++) {
         if (argv[i][0] == '-') {
             // Đây là một tùy chọn (flag)
@@ -28,11 +27,7 @@ int main(int argc, char *argv[]) {
                     case 't':
                         sort_by_time = 1;
                         break;
-                    case 'r':
-                        reverse_order = 1;
-                        break;
                     default:
-                        // Báo lỗi tùy chọn không hợp lệ
                         fprintf(stderr, "%s: Tùy chọn không hợp lệ -- '%c'\n", argv[0], argv[i][j]);
                         return 1;
                 }
@@ -43,19 +38,18 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    // 3. Gọi hàm đọc thư mục (sẽ viết trong ls_core.c)
+    // 2. Gọi hàm đọc thư mục (T1)
     int file_count = 0;
     FileEntry *files = read_directory(target_path, &file_count, show_hidden, argv[0]);
 
     if (files == NULL) {
-        return 1; // Lỗi đã được xử lý trong read_directory
+        return 1; 
     }
 
-    // 4. Gọi hàm xử lý, sắp xếp và in
-    // Trước tiên, xử lý các dữ liệu phụ thuộc (T2, T3, T4 - thời gian/kích thước)
-    // Sau đó mới sắp xếp và in.
+    // 3. Gọi hàm xử lý, sắp xếp và in (Tích hợp T2, T3, T4)
+    process_and_print(files, file_count, long_format, sort_by_time); 
 
-    // 5. Dọn dẹp bộ nhớ
+    // 4. Dọn dẹp bộ nhớ
     if (files != NULL) {
         free(files);
     }
