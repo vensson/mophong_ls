@@ -35,7 +35,7 @@ typedef struct {
 } FileEntry;
 
 // Khai báo nguyên mẫu hàm (API) cho T1 để T4/main.c có thể gọi
-FileEntry* read_directory(const char *path, int *count, int show_hidden);
+FileEntry* read_directory(const char *path, int *count, int show_hidden, const char *app_name);
 
 // Khai báo nguyên mẫu hàm (API) cho T2
 void get_permissions_string(FileEntry *entry);
