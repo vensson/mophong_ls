@@ -3,31 +3,51 @@
 #define LS_H
 
 #include <sys/stat.h>
-#include <sys/types.h> 
-#include <time.h>      
-#include <unistd.h>    
+#include <sys/types.h>
+#include <time.h>
+#include <unistd.h>
 #include <errno.h>
 
-// Cấu trúc FileEntry: Lưu trữ toàn bộ thông tin của một mục
 typedef struct {
-    char name[256];        
-    struct stat stat_info; // Dữ liệu thô từ stat()
-    
-    // Dữ liệu đã xử lý
-    char mode_string[11];  // -rwxr-xr-x (T2)
-    char owner_name[32];   // Tên người dùng (T3)
-    char group_name[32];   // Tên nhóm (T3)
-    char time_string[15];  // Chuỗi thời gian đã định dạng (T4)
-    
+    char name[256];
+    char path[1024];          // <<< THÊM: full path cho đệ quy
+    struct stat stat_info;
+
+    char mode_string[11];
+    char owner_name[32];
+    char group_name[32];
+    char time_string[15];
+    char size_string[10];
 } FileEntry;
 
-// Khai báo Nguyên mẫu Hàm (API)
-FileEntry* read_directory(const char *path, int *count, int show_hidden, const char *app_name); // T1
-void get_permissions_string(FileEntry *entry); // T2
-void get_owner_and_group_names(FileEntry *entry); // T3
-void format_time_string(FileEntry *entry); // T4 (Định dạng thời gian)
-void sort_files(FileEntry *files, int count, int sort_by_time); // T4 (Sắp xếp)
-void process_and_print(FileEntry *files, int count, int long_format, int sort_by_time); // T4 (Tích hợp)
-void print_file_list(FileEntry *files, int count, int long_format); // T4 (In ấn)
+/* API */
+FileEntry* read_directory(const char *path, int *count, int show_hidden, const char *app_name);
+
+void get_permissions_string(FileEntry *entry);
+void get_owner_and_group_names(FileEntry *entry);
+void format_time_string(FileEntry *entry);
+void get_human_readable_size(FileEntry *entry);
+
+/* SORT */
+void sort_files(FileEntry *files, int count, int sort_by_time, int sort_by_size);
+
+/* PRINT */
+void print_file_list(FileEntry *files, int count, int long_format, int human_readable);
+
+/* CORE */
+void process_and_print(FileEntry *files, int count,
+                       int long_format,
+                       int sort_by_time,
+                       int sort_by_size,
+                       int human_readable);
+
+/* -R */
+void list_recursive(const char *path,
+                    int show_hidden,
+                    int long_format,
+                    int sort_by_time,
+                    int sort_by_size,
+                    int human_readable,
+                    const char *app_name);
 
 #endif
